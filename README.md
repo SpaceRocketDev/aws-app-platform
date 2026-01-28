@@ -1,5 +1,4 @@
-![banner]({{ .BannerURL }})
-Hello
+![banner](/docs/imgs/banner.png)
 
 
 
