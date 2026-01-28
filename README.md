@@ -1,4 +1,4 @@
-![banner](/docs/imgs/banner.png)
+![banner](./docs/imgs/banner.png)
 
 
 
