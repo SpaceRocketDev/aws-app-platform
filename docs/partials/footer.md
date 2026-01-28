@@ -1,5 +1,3 @@
-![banner](docs/imgs/banner.png)
-
 ---
 
 > [!TIP]
