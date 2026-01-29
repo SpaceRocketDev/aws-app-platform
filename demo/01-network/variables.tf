@@ -1,4 +1,3 @@
-# variables.tf
 variable "env" {
   type        = string
   description = "Deployment environment identifier (for example: dev, staging, prod). Used in name_prefix, tags, log prefixes, and DNS/SSM path construction."
@@ -15,12 +14,6 @@ variable "project" {
   type        = string
   description = "Project identifier used in name_prefix, tags, logs bucket naming, and routing/SSM path construction."
   default     = "demo"
-}
-
-variable "admin_email" {
-  type        = string
-  description = "Email address subscribed to the SNS alerts topic for CloudWatch alarms (ALB 5xx and target 5xx)."
-  default     = "admin@example.com"
 }
 
 variable "aws_region" {

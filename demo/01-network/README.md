@@ -112,7 +112,6 @@ locals {
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
-| <a name="input_admin_email"></a> [admin\_email](#input\_admin\_email) | Email address subscribed to the SNS alerts topic for CloudWatch alarms (ALB 5xx and target 5xx). | `string` | `"admin@example.com"` | no |
 | <a name="input_aws_region"></a> [aws\_region](#input\_aws\_region) | AWS region to deploy into. Used for provider configuration, regional service ARNs, and region-specific resources (for example, ELB log delivery account mapping). | `string` | `"us-east-1"` | no |
 | <a name="input_env"></a> [env](#input\_env) | Deployment environment identifier (for example: dev, staging, prod). Used in name\_prefix, tags, log prefixes, and DNS/SSM path construction. | `string` | `"dev"` | no |
 | <a name="input_natgw_count"></a> [natgw\_count](#input\_natgw\_count) | NAT Gateway strategy for the VPC. Supported values: "none" (0 NAT gateways), "one" (single NAT gateway), "all" (one NAT gateway per AZ). Affects NAT EIPs that are also allow-listed on the ALB security group. | `string` | `"one"` | no |

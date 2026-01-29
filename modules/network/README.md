@@ -151,7 +151,9 @@ No modules.
 
 | Name | Description |
 |------|-------------|
+| <a name="output_name_prefix"></a> [name\_prefix](#output\_name\_prefix) | Name prefix used for resources created by this module. |
 | <a name="output_nat_gateway_eips"></a> [nat\_gateway\_eips](#output\_nat\_gateway\_eips) | List of NAT Gateway Elastic IP addresses |
+| <a name="output_network"></a> [network](#output\_network) | Network primitives for downstream stacks via remote state (stable contract). |
 | <a name="output_subnets_private"></a> [subnets\_private](#output\_subnets\_private) | n/a |
 | <a name="output_subnets_public"></a> [subnets\_public](#output\_subnets\_public) | n/a |
 | <a name="output_vpc"></a> [vpc](#output\_vpc) | n/a |
