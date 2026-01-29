@@ -44,6 +44,11 @@ extra_tags = {
 }
 ```
 
+```bash
+terraform init -backend-config=backend.hcl
+terraform apply -var-file="terraform.tfvars"
+```
+
 ## Consuming base outputs in downstream layers
 
 In a downstream layer such as `03-vpc`, import the `base` object from remote state.
