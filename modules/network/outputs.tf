@@ -14,7 +14,3 @@ output "nat_gateway_eips" {
   description = "List of NAT Gateway Elastic IP addresses"
   value       = aws_eip.ngw[*].public_ip
 }
-
-# output "sg_ecs_fargate_task" {
-#   value = aws_security_group.ecs_fargate_task
-# }
