@@ -1,101 +1,84 @@
 ![banner](../../docs/imgs/banner.png)
 
-# Base Module Group Demo
+# Network Module Demo
 
-**Module Group** to provision a production-ready AWS networking and application ingress foundation.
+This demo provisions a **production ready AWS VPC networking layer** intended to be reused by downstream infrastructure stacks.
 
-This Module Group provisions a fully configured AWS VPC, Application Load Balancer, ACM certificates, and alerting infrastructure. It is designed to serve as the foundational layer for compliant, internet-facing workloads, providing secure networking, HTTPS ingress, DNS aliasing, access logging, and operational alarms. Ideal for teams building ECS, EKS, or other AWS-native application platforms that require a repeatable, auditable, and production-grade infrastructure baseline.
+The network module is responsible only for **network primitives and connectivity**. It deliberately avoids application ingress, load balancers, certificates, DNS, and alerting concerns, which are handled by higher level modules.
+
+This module provides a consistent, IPv6 enabled VPC layout with controlled egress, private service access, and opinionated defaults suitable for compliant, production environments.
+
+It is designed to serve as the foundational network layer for ECS, EKS, RDS, and other AWS native workloads that require a repeatable, auditable networking baseline.
 
 ## What This Module Provisions
 
-This Module Group provisions the following resources:
-- A fully configured AWS VPC with public and private subnets spanning multiple Availability Zones, including NAT gateway support.
-- An internet-facing Application Load Balancer with HTTPS listeners, modern TLS security policies, access logging, and health checks.
-- ACM certificate integration for primary and additional domains to enable TLS termination.
-- Route53 alias records for application domains and subdomains.
-- CloudWatch alarms and SNS topics for load balancer and target health alerting.
-- Shared outputs intended for consumption by downstream ECS, EKS, or other AWS native application modules.
+This demo provisions the following network resources:
+
+- A dedicated AWS VPC with DNS support and an automatically assigned IPv6 CIDR block
+- Public and private subnets spread across a configurable number of Availability Zones
+- Internet Gateway and routing for public subnets
+- Configurable NAT Gateway strategy for private subnet egress (`none`, `one`, or `all`)
+- Elastic IPs for NAT Gateways when enabled
+- VPC Flow Logs delivered to CloudWatch Logs using a dedicated KMS key and least privilege IAM role
+- Interface VPC Endpoints for:
+  - AWS Systems Manager
+  - AWS Secrets Manager
+- Private DNS enabled for all interface endpoints
+- A dedicated security group for VPC endpoints
+- Shared network outputs intended for consumption by downstream modules
 
 ## Prerequisites
-- Terraform state bucket, ex: `terraform-demo-state-example-123456789`. Note S3 buckets names are global, so make sure its unique. 
-- Terraform state lock Dynamo DB table created, ex: `terraform-state-locks-example`
-- Domain name with ACM certificate created.
 
+- Terraform state S3 bucket, for example `terraform-demo-state-example-123456789`
+  - S3 bucket names are global and must be unique
+- Terraform state lock DynamoDB table, for example `terraform-state-locks-example`
+- AWS account credentials configured for the target account
 
 ## Usage
 
 ### Backend Configuration
 
-Configure Terraform backend state file:
-**backends.tf**
+Configure the Terraform backend for remote state:
+
+**backend.hcl**
 ```hcl
 bucket         = "terraform-demo-state-example-123456789"
 key            = "terraform/state/network.tfstate"
 region         = "us-east-1"
 dynamodb_table = "terraform-state-locks-example"
-```
+````
 
-### Custom Variables
+### Required Variables
 
-These variables are required to be passed in:
-- `admin_email`
-- `base_domain`
-- `env`
-- `org`
-- `project`
-- `aws_region`
-- `allowed_ips`
-- `app_names`
-- `natgw_count`
-- `cert_arn`
-- `additional_cert_arn`
+The following variables must be provided:
 
-#### Example .tfvars file:
+* `env`
+* `org`
+* `project`
+* `aws_region`
+* `natgw_count`
+
+### Example tfvars File
 
 **terraform.tfvars**
+
 ```hcl
-admin_email         = "admin@spacerocket.dev"
-base_domain         = "demo.spacerocket.dev"
-env                 = "dev"
-org                 = "example"
-project             = "demo-proj" # keep limited to 9 characters
-aws_region          = "us-east-1"
-allowed_ips         = ["203.0.113.10"] # your IP or VPN address
-app_names           = ["", "prom", "graf", "cwe", "hello"]
-natgw_count         = "one"
-cert_arn            = "arn:aws:acm:us-east-1:123456789012:certificate/00000000-0000-0000-0000-000000000000"
-additional_cert_arn = "arn:aws:acm:us-east-1:123456789012:certificate/00000000-0000-0000-0000-000000000000"
+env          = "dev"
+org          = "spr"
+project      = "demo-dvoc"
+aws_region   = "us-east-1"
+natgw_count  = "one"
 ```
 
 > [!IMPORTANT]
-> In SpaceRocket.Dev demos and examples, we use the `spacerocket.dev` domain for illustration purposes only.
-> You must replace this with a domain that you own and control before applying any infrastructure.
+> This demo derives the AWS account ID at runtime using `data.aws_caller_identity.current.account_id`.
+> This keeps the example portable across accounts without requiring an explicit `account_id` variable.
 >
-> Using a domain you do not own can cause certificate validation failures, DNS errors, and unintended conflicts.
-> Always configure Route53 zones, ACM certificates, and DNS records against your own domain in real environments.
-
-
-
-```bash
-
-```
-
-> [!IMPORTANT]
-> In SpaceRocket.Dev’s demos, we avoid pinning modules to specific versions to reduce the risk of documentation drifting from the most recent releases.
-> However, for your own projects, we strongly recommend pinning each module to the exact version in use.
-> This helps maintain infrastructure stability.
-> We also suggest adopting a consistent process for managing and updating versions to prevent unexpected changes.
-
-> [!IMPORTANT]
-> This repository derives the AWS account ID at runtime using `data.aws_caller_identity.current.account_id`.
-> We do this to keep the demo and examples portable across accounts without requiring `var.account_id`.
->
-> For production, we recommend using a static, explicitly managed mapping for any account specific values that influence
-> security policy, ARNs, or trust boundaries (for example, cross account IAM/KMS policies, allowlists, or organization
-> guardrails). This avoids accidental drift when running the same code across multiple accounts and environments.
+> For production environments, we recommend using a static, explicitly managed mapping for any account specific values that influence security policy, ARNs, or trust boundaries. This avoids accidental drift when running the same code across multiple accounts.
 
 **identity.tf**
-```tf
+
+```hcl
 data "aws_caller_identity" "current" {}
 
 locals {
@@ -103,11 +86,15 @@ locals {
 }
 ```
 
+> [!IMPORTANT]
+> In SpaceRocket.Dev demos, modules may not be pinned to specific versions to reduce documentation drift.
+> For real environments, always pin module versions explicitly to maintain infrastructure stability.
+
 ## Providers
 
 | Name | Version |
 |------|---------|
-| <a name="provider_aws"></a> [aws](#provider\_aws) | 6.19.0 |
+| <a name="provider_aws"></a> [aws](#provider\_aws) | 6.28.0 |
 
 ## Modules
 
@@ -125,13 +112,8 @@ locals {
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
-| <a name="input_additional_cert_arn"></a> [additional\_cert\_arn](#input\_additional\_cert\_arn) | Additional ACM certificate ARN reserved for future use (not currently passed into the ALB module configuration). | `string` | `""` | no |
 | <a name="input_admin_email"></a> [admin\_email](#input\_admin\_email) | Email address subscribed to the SNS alerts topic for CloudWatch alarms (ALB 5xx and target 5xx). | `string` | `"admin@example.com"` | no |
-| <a name="input_allowed_ips"></a> [allowed\_ips](#input\_allowed\_ips) | IPv4 addresses allowed to reach the public ALB. Values can be plain IPs (x.x.x.x) or CIDRs. Plain IPs are normalized to /32 for security group rules. | `list(string)` | <pre>[<br/>  "0.0.0.0/0"<br/>]</pre> | no |
-| <a name="input_app_names"></a> [app\_names](#input\_app\_names) | List of application subdomain prefixes used to generate fqdn\_map, Route53 alias records, and per-app SSM/path prefixes. Use an empty string to represent the root domain. | `list(string)` | <pre>[<br/>  "",<br/>  "app"<br/>]</pre> | no |
 | <a name="input_aws_region"></a> [aws\_region](#input\_aws\_region) | AWS region to deploy into. Used for provider configuration, regional service ARNs, and region-specific resources (for example, ELB log delivery account mapping). | `string` | `"us-east-1"` | no |
-| <a name="input_base_domain"></a> [base\_domain](#input\_base\_domain) | Base DNS domain hosted in Route53. Used to generate per-app FQDNs (for example, app.base\_domain and base\_domain) and create ALB alias records. | `string` | `"example.com"` | no |
-| <a name="input_cert_arn"></a> [cert\_arn](#input\_cert\_arn) | ACM certificate ARN used by the ALB HTTPS listener as the primary TLS certificate (passed as main\_cert\_arn). | `string` | `""` | no |
 | <a name="input_env"></a> [env](#input\_env) | Deployment environment identifier (for example: dev, staging, prod). Used in name\_prefix, tags, log prefixes, and DNS/SSM path construction. | `string` | `"dev"` | no |
 | <a name="input_natgw_count"></a> [natgw\_count](#input\_natgw\_count) | NAT Gateway strategy for the VPC. Supported values: "none" (0 NAT gateways), "one" (single NAT gateway), "all" (one NAT gateway per AZ). Affects NAT EIPs that are also allow-listed on the ALB security group. | `string` | `"one"` | no |
 | <a name="input_network_config"></a> [network\_config](#input\_network\_config) | n/a | <pre>object({<br/>    base_domain         = string<br/>    account_id          = string<br/>    env                 = string<br/>    project             = string<br/>    aws_region          = string<br/>    az_num              = number<br/>    vpc_ip_block        = string<br/>    subnet_cidr_private = string<br/>    subnet_cidr_public  = string<br/>    new_bits_private    = number<br/>    new_bits_public     = number<br/>    natgw_count         = string<br/>    public_ips          = map(string)<br/>    public_ips_v6       = map(string)<br/>    app_ports           = list(number)<br/>    common_tags         = map(string)<br/>  })</pre> | <pre>{<br/>  "account_id": "",<br/>  "app_ports": [<br/>    80,<br/>    443<br/>  ],<br/>  "aws_region": "us-east-1",<br/>  "az_num": 3,<br/>  "base_domain": "example.com",<br/>  "common_tags": {<br/>    "Env": "dev",<br/>    "ManagedBy": "terraform",<br/>    "Project": "default"<br/>  },<br/>  "env": "dev",<br/>  "natgw_count": "none",<br/>  "new_bits_private": 2,<br/>  "new_bits_public": 2,<br/>  "project": "default",<br/>  "public_ips": {<br/>    "0.0.0.0/0": "Open"<br/>  },<br/>  "public_ips_v6": {<br/>    "::/0": "Open"<br/>  },<br/>  "subnet_cidr_private": "172.27.72.0/24",<br/>  "subnet_cidr_public": "172.27.73.0/24",<br/>  "vpc_ip_block": "172.27.72.0/22"<br/>}</pre> | no |
@@ -140,7 +122,10 @@ locals {
 
 ## Outputs
 
-No outputs.
+| Name | Description |
+|------|-------------|
+| <a name="output_network"></a> [network](#output\_network) | All base primitives as a single object for downstream stacks via remote state. |
+| <a name="output_network2"></a> [network2](#output\_network2) | Network primitives for downstream stacks via remote state. |
 
 ---
 
