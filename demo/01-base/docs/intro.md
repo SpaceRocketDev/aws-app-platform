@@ -27,7 +27,7 @@ bucket         = "terraform-demo-state-xxxx"
 key            = "terraform/state/01-base.tfstate"
 region         = "us-east-1"
 dynamodb_table = "terraform-state-locks"
-````
+```
 
 ### Apply 01-base
 
