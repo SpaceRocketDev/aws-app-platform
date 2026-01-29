@@ -1,9 +1,9 @@
 ---
 
 > [!TIP]
-> #### Use SpaceRocket.Dev Terraform Reference Architectures for AWS
+> #### Use SpaceRocket.Dev Open Source Terraform Modules for AWS
 >
-> Use SpaceRocket.Dev’s ready to use Terraform reference architectures for AWS to get up and running fast, without sacrificing security, ownership, or clarity.
+> Use SpaceRocket.Dev’s ready to use Terraform modules for AWS to get up and running fast, without sacrificing security, ownership, or clarity.
 >
 > ✅ Side by side implementation of this module in your AWS account with your team.<br/>
 > ✅ Your team owns the code and the outcome.<br/>
@@ -16,7 +16,7 @@
 >
 > <br/>
 >
-> SpaceRocket.Dev is a solo DevSecOps consultancy based in San Francisco, focused on helping teams build secure, compliant, production ready AWS platforms using Terraform as the source of truth.
+> SpaceRocket.Dev is a solo DevSecOps consultancy based in San Francisco, CA; focused on helping teams build secure, compliant, production ready AWS platforms using Terraform as the source of truth.
 >
 > *Your team ships faster, with fewer surprises.*
 >
