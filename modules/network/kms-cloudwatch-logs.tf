@@ -14,8 +14,8 @@ resource "aws_kms_key" "cloudwatch_logs" {
       {
         Sid    = "EnableRootPermissions",
         Effect = "Allow",
-        Principal = { 
-          AWS = "arn:aws:iam::${local.kms_account}:root" 
+        Principal = {
+          AWS = "arn:aws:iam::${local.kms_account}:root"
         },
         Action   = "kms:*",
         Resource = "*"
@@ -23,8 +23,8 @@ resource "aws_kms_key" "cloudwatch_logs" {
       {
         Sid    = "AllowCloudWatchLogsUse",
         Effect = "Allow",
-        Principal = { 
-          Service = "logs.${local.kms_region}.amazonaws.com" 
+        Principal = {
+          Service = "logs.${local.kms_region}.amazonaws.com"
         },
         Action = [
           "kms:Encrypt",

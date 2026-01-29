@@ -1,5 +1,5 @@
 # VPC Flow Logs log group (KMS-encrypted)
-resource "aws_cloudwatch_log_group" "vpc_flow" { 
+resource "aws_cloudwatch_log_group" "vpc_flow" {
   name              = "/aws/vpc/flow-logs/${local.name_prefix}"
   retention_in_days = 365
 
