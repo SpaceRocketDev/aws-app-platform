@@ -24,7 +24,7 @@ resource "aws_vpc_endpoint" "secretsmanager" {
   vpc_id              = aws_vpc.main.id
   security_group_ids  = [aws_security_group.ssm_vpc.id]
   private_dns_enabled = true
-  tags = merge(local.common_tags, { Name = "${local.name_prefix}-secretsmanager" })
+  tags                = merge(local.common_tags, { Name = "${local.name_prefix}-secretsmanager" })
 }
 
 # Associate the Secrets Manager VPC Endpoint with all private subnets

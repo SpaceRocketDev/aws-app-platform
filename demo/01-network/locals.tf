@@ -1,14 +1,15 @@
 locals {
-  network_config = {
-    account_id   = data.aws_caller_identity.current.account_id
-    env          = var.env
-    project      = var.project
-    aws_region   = var.aws_region
+  env = var.env
 
-    project_name = "${var.project}-${var.env}"
+  network_config = {
+    account_id = data.aws_caller_identity.current.account_id
+    project    = var.project
+    aws_region = var.aws_region
+
+    project_name = "${var.project}-${local.env}"
 
     # required by modules/network input type
-    name_prefix  = "${var.org}-${var.project}-${var.env}"
+    name_prefix = "${var.org}-${var.project}-${local.env}"
 
     az_num              = 3
     vpc_ip_block        = "172.27.72.0/22"
@@ -28,7 +29,7 @@ locals {
     app_ports     = [80, 443]
 
     common_tags = {
-      Env       = var.env
+      Env       = local.env
       ManagedBy = "terraform"
       Project   = var.project
     }
