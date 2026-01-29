@@ -9,7 +9,7 @@ output:
 content: |-
   {{ include "../../docs/partials/demo/header.md" }}
 
-  {{ include "intro.md" }}
+  {{ include "docs/intro.md" }}
 
   {{ .Providers }}
 
