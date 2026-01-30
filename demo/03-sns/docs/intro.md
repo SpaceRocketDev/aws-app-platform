@@ -32,8 +32,8 @@ dynamodb_table = "terraform-state-locks"
 Example `terraform.tfvars`:
 
 ```hcl
-base_state_bucket = "terraform-demo-state-xxxx"
-base_state_key    = "terraform/state/01-base.tfstate"
+state_bucket  = "terraform-demo-state-xxxx"
+state_key    = "terraform/state/01-base.tfstate"
 lock_table_name   = "terraform-state-locks"
 aws_region        = "us-east-1"
 
@@ -57,8 +57,8 @@ data "terraform_remote_state" "base" {
   backend = "s3"
 
   config = {
-    bucket       = var.base_state_bucket
-    key          = var.base_state_key
+    bucket       = var.state_bucket 
+    key          = var.state_key
     region       = var.aws_region
     use_lockfile = true
   }

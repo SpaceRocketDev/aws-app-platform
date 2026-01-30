@@ -87,3 +87,19 @@ locals {
 > [!IMPORTANT]
 > In SpaceRocket.Dev demos, modules may not be pinned to specific versions to reduce documentation drift.
 > For real environments, always pin module versions explicitly to maintain infrastructure stability.
+
+#### Import Network Remote State
+
+**data.tf**
+```hcl
+data "terraform_remote_state" "network" {
+  backend = "s3"
+
+  config = {
+    bucket       = var.state_bucket 
+    key          = var.network_state_key
+    region       = var.aws_region
+    use_lockfile = true
+  }
+}
+```

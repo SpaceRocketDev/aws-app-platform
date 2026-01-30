@@ -34,8 +34,8 @@ dynamodb_table = "terraform-state-locks"
 Example `terraform.tfvars`:
 
 ```hcl
-base_state_bucket = "terraform-demo-state-xxxx"
-base_state_key    = "terraform/state/01-base.tfstate"
+state_bucket  = "terraform-demo-state-xxxx"
+state_key    = "terraform/state/01-base.tfstate"
 lock_table_name   = "terraform-state-locks"
 aws_region        = "us-east-1"
 
@@ -59,8 +59,8 @@ data "terraform_remote_state" "base" {
   backend = "s3"
 
   config = {
-    bucket         = var.base_state_bucket
-    key            = var.base_state_key
+    bucket         = var.state_bucket 
+    key            = var.state_key
     region         = var.aws_region
     dynamodb_table = var.lock_table_name
   }
@@ -147,8 +147,8 @@ module "alb" {
 |------|-------------|------|---------|:--------:|
 | <a name="input_admin_email"></a> [admin\_email](#input\_admin\_email) | Email address subscribed to the SNS alerts topic for CloudWatch alarms (ALB 5xx and target 5xx). | `string` | `"admin@example.com"` | no |
 | <a name="input_aws_region"></a> [aws\_region](#input\_aws\_region) | n/a | `string` | n/a | yes |
-| <a name="input_base_state_bucket"></a> [base\_state\_bucket](#input\_base\_state\_bucket) | S3 bucket storing the base stack Terraform state | `string` | n/a | yes |
-| <a name="input_base_state_key"></a> [base\_state\_key](#input\_base\_state\_key) | State key for the base stack | `string` | n/a | yes |
+| <a name="input_state_bucket "></a> [base\_state\_bucket](#input\_base\_state\_bucket) | S3 bucket storing the base stack Terraform state | `string` | n/a | yes |
+| <a name="input_state_key"></a> [base\_state\_key](#input\_base\_state\_key) | State key for the base stack | `string` | n/a | yes |
 | <a name="input_lock_table_name"></a> [lock\_table\_name](#input\_lock\_table\_name) | DynamoDB table used for Terraform state locking | `string` | n/a | yes |
 | <a name="input_sns_config"></a> [sns\_config](#input\_sns\_config) | n/a | <pre>object({<br/>    account_id = string<br/>    env        = string<br/>    project    = string<br/>    region     = string<br/>    topic_name = string<br/>    subscriptions = map(object({<br/>      protocol = string<br/>      endpoint = string<br/>    }))<br/>  })</pre> | <pre>{<br/>  "account_id": "",<br/>  "env": "dev",<br/>  "project": "default",<br/>  "region": "us-east-1",<br/>  "subscriptions": {<br/>    "admin": {<br/>      "endpoint": "admin@example.com",<br/>      "protocol": "email"<br/>    }<br/>  },<br/>  "topic_name": "default-ecs-dev-alerts"<br/>}</pre> | no |
 

@@ -1,9 +1,7 @@
-output "sns_topic_arn" {
-  description = "Primary SNS topic ARN."
-  value       = module.sns_dev_alerts.topic_arn
-}
-
-output "sns_topic_name" {
-  description = "Primary SNS topic name."
-  value       = module.sns_dev_alerts.topic_name
+output "sns" {
+  description = "All sns primitives as a single object for downstream stacks via remote state."
+  value = {
+    sns_topic_arn  = module.sns_dev_alerts.topic_arn
+    sns_topic_name = module.sns_dev_alerts.topic_name
+  }
 }

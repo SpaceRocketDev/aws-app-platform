@@ -1,4 +1,4 @@
-variable "base_state_bucket" {
+variable "state_bucket" {
   description = "S3 bucket storing the base stack Terraform state"
   type        = string
 }

@@ -20,6 +20,11 @@ output "nat_gateway_eips" {
   value       = aws_eip.ngw[*].public_ip
 }
 
+output "natgw_count" {
+  description = "NAT Gateway strategy for private subnet egress. Valid values: \"none\" (no NAT Gateways), \"one\" (single shared NAT Gateway), or \"all\" (one NAT Gateway per Availability Zone)."
+  value       = local.natgw_count
+}
+
 output "network" {
   description = "Network primitives for downstream stacks via remote state (stable contract)."
   value = {
