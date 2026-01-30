@@ -8,7 +8,7 @@ resource "aws_vpc" "main" {
   assign_generated_ipv6_cidr_block = true
 
   tags = merge(var.network_config.common_tags, {
-    Name = var.network_config.project_name
+    Name = var.network_config.name_prefix
   })
 }
 
@@ -17,6 +17,6 @@ resource "aws_internet_gateway" "igw" {
   vpc_id = aws_vpc.main.id
 
   tags = merge(local.common_tags, {
-    Name = var.network_config.project_name
+    Name = var.network_config.name_prefix
   })
 }

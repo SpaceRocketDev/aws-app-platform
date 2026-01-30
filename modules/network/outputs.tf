@@ -26,7 +26,6 @@ output "network" {
     account_id   = var.network_config.account_id
     aws_region   = var.network_config.aws_region
     region       = var.network_config.aws_region
-    project_name = var.network_config.project_name
     name_prefix  = local.name_prefix
 
     vpc_id = aws_vpc.main.id
