@@ -5,6 +5,7 @@ output "base" {
     project                  = var.project
     env                      = var.env
     aws_region               = var.aws_region
+    app_names                = var.app_names
     name_prefix              = local.name_prefix
     app_path                 = local.app_path
     common_tags              = local.common_tags
