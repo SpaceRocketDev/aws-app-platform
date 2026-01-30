@@ -9,5 +9,6 @@ output "base" {
     app_path                 = local.app_path
     common_tags              = local.common_tags
     ssm_secret_path_prefixes = local.ssm_secret_path_prefixes
+    fqdn_map                 = local.fqdn_map
   }
 }
