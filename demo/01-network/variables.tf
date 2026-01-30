@@ -1,25 +1,20 @@
-variable "env" {
+variable "base_state_bucket" {
+  description = "S3 bucket storing the base stack Terraform state"
   type        = string
-  description = "Deployment environment identifier (for example: dev, staging, prod). Used in name_prefix, tags, log prefixes, and DNS/SSM path construction."
-  default     = "dev"
 }
 
-variable "org" {
+variable "base_state_key" {
+  description = "State key for the base stack"
   type        = string
-  description = "Organization or tenant identifier used to build name_prefix and hierarchical paths (org/project/env) for SSM and routing."
-  default     = "example"
 }
 
-variable "project" {
+variable "lock_table_name" {
+  description = "DynamoDB table used for Terraform state locking"
   type        = string
-  description = "Project identifier used in name_prefix, tags, logs bucket naming, and routing/SSM path construction."
-  default     = "demo"
 }
 
 variable "aws_region" {
-  type        = string
-  description = "AWS region to deploy into. Used for provider configuration, regional service ARNs, and region-specific resources (for example, ELB log delivery account mapping)."
-  default     = "us-east-1"
+  type = string
 }
 
 variable "natgw_count" {
