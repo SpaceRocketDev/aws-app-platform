@@ -23,3 +23,9 @@ variable "extra_tags" {
   type        = map(string)
   default     = {}
 }
+
+variable "app_names" {
+  type        = list(string)
+  description = "List of application subdomain prefixes used to generate fqdn_map, Route53 alias records, and per-app SSM/path prefixes. Use an empty string to represent the root domain."
+  default     = ["", "app"]
+}
