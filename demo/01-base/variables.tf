@@ -24,6 +24,12 @@ variable "extra_tags" {
   default     = {}
 }
 
+variable "base_domain" {
+  type        = string
+  description = "Base DNS domain hosted in Route53. Used to generate per-app FQDNs (for example, app.base_domain and base_domain) and create ALB alias records."
+  default     = "example.com"
+}
+
 variable "app_names" {
   type        = list(string)
   description = "List of application subdomain prefixes used to generate fqdn_map, Route53 alias records, and per-app SSM/path prefixes. Use an empty string to represent the root domain."

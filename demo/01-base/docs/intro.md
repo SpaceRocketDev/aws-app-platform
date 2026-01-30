@@ -9,12 +9,33 @@ Apply this layer first.
 
 The `base` output contains:
 
-- `org`
-- `project`
-- `env`
-- `aws_region`
-- `name_prefix`
-- `common_tags`
+* `org`
+* `project`
+* `env`
+* `aws_region`
+* `name_prefix`
+* `common_tags`
+* `app_path`
+* `fqdn_map`
+
+### `fqdn_map`
+
+`fqdn_map` is a computed map of application names to fully qualified domain names derived from `app_names` and `base_domain`.
+
+* Non-empty app names are mapped to `<app>.<base_domain>`
+* An empty app name is treated as the root domain and mapped to `<base_domain>`
+
+Example:
+
+```hcl
+fqdn_map = {
+  api   = "api.example.com"
+  admin = "admin.example.com"
+  root  = "example.com"
+}
+```
+
+This is intended for consistent reuse by ALB, DNS, and application layers without recomputing domain logic.
 
 ## Usage
 
@@ -39,6 +60,10 @@ project    = "demo"
 env        = "dev"
 aws_region = "us-east-1"
 
+app_names = ["api", "admin", ""]
+
+base_domain = "example.com"
+
 extra_tags = {
   Owner = "platform"
 }
@@ -60,7 +85,7 @@ data "terraform_remote_state" "base" {
   backend = "s3"
 
   config = {
-    bucket       = var.state_bucket 
+    bucket       = var.state_bucket
     key          = var.base_state_key
     region       = var.aws_region
     use_lockfile = true
@@ -82,6 +107,7 @@ Optionally flatten:
 locals {
   name_prefix = local.base.name_prefix
   common_tags = local.base.common_tags
+  fqdn_map    = local.base.fqdn_map
 }
 ```
 
@@ -97,6 +123,8 @@ module "network" {
   # network-specific inputs
 }
 ```
+
+Downstream layers such as ALB, DNS, or ECS services can consume `fqdn_map` directly for listener rules, certificates, or routing without duplicating domain logic.
 
 ## Design notes
 
