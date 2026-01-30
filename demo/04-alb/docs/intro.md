@@ -3,7 +3,6 @@
 This demo provisions a **production ready public Application Load Balancer (ALB)** with secure defaults for HTTPS ingress, DNS aliases, logging, and basic health and reliability alarms.
 
 It is designed to sit on top of:
-
 - `01-base` for shared identity, naming, and tags
 - `02-network` for VPC and public subnets
 - `03-sns` for the alarms topic used by CloudWatch
