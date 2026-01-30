@@ -60,10 +60,10 @@ data "terraform_remote_state" "base" {
   backend = "s3"
 
   config = {
-    bucket         = "terraform-demo-state-xxxx"
-    key            = "terraform/state/01-base.tfstate"
-    region         = "us-east-1"
-    dynamodb_table = "terraform-state-locks"
+    bucket       = var.base_state_bucket
+    key          = var.base_state_key
+    region       = var.aws_region
+    use_lockfile = true
   }
 }
 ```
