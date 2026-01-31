@@ -1,0 +1,189 @@
+resource "aws_codebuild_project" "deploy" {
+  name          = "${local.task_name}-codebuild-deploy-project"
+  description   = "${local.task_name} Codebuild Deploy Project"
+  build_timeout = 5
+  service_role  = aws_iam_role.code_build_role.arn
+  encryption_key = data.aws_kms_alias.s3kmskey.target_key_arn
+  
+  artifacts {
+    type = "CODEPIPELINE"
+  }
+
+  cache {
+    type     = "S3"
+    location = aws_s3_bucket.codepipeline_bucket.bucket
+  }
+
+  environment {
+    compute_type = local.codebuild_compute_type
+    image        = local.codebuild_image
+    type         = local.codebuild_type
+    image_pull_credentials_type = "CODEBUILD"
+
+    environment_variable {
+      name  = "AWS_ACCOUNT_ID"
+      value = local.account_id
+    }
+
+    environment_variable {
+      name  = "IMAGE_REPO_NAME"
+      value = local.image_repo
+    }
+  }
+
+  logs_config {
+    cloudwatch_logs {
+      group_name  = "${local.log_group_name}/codebuild/deploy"
+    }
+
+    s3_logs {
+      status   = "ENABLED"
+      location = "${aws_s3_bucket.codepipeline_bucket.id}/deploy-log"
+    }
+  }
+
+  source {
+    type      = "CODEPIPELINE"
+    buildspec = <<-EOT
+      version: 0.2
+      env:
+        variables:
+          AWS_REGION: "${local.region}"
+          S3_BUCKET: ""
+          S3_KEY: ""
+      phases:
+        install:
+          commands:
+            - echo ✅ Begin install phase
+            - aws --version
+        pre_build:
+          commands:
+            - echo 👉 AWS_DEFAULT_REGION $AWS_DEFAULT_REGION
+            - IMAGE_TAG=$(cat image_tag.txt)
+            - echo 👍 IMAGE_TAG $IMAGE_TAG
+            - |
+              aws ecs register-task-definition \
+                --family "${local.task_name}" \
+                --task-role-arn arn:aws:iam::${local.account_id}:role/${local.fargate_ecs_task_role} \
+                --execution-role-arn ${local.fargate_ecs_execution_role} \
+                --container-definitions '[{
+                    "name": "${local.task_name}",
+                    "image": "${local.account_id}.dkr.ecr.${local.region}.amazonaws.com/${local.image_repo}:'$IMAGE_TAG'",
+                    "memory": ${local.fargate_memory},
+                    "cpu": ${local.fargate_cpu},
+                    "essential": true,
+                    "portMappings": [
+                        {
+                            "containerPort": ${local.port},
+                            "hostPort": ${local.port},
+                            "protocol": "tcp"
+                        }
+                    ],
+                    "environment": ${jsonencode(local.app_environments)},
+                    "secrets": ${jsonencode(local.app_secrets)},
+                    "ulimits": [
+                        {
+                            "name": "nofile",
+                            "softLimit": 65536,
+                            "hardLimit": 65536
+                        }
+                    ],
+                    "logConfiguration": {
+                        "logDriver": "awslogs",
+                        "options": {
+                            "awslogs-group": "${local.log_group_name}/codebuild/deploy",
+                            "awslogs-region": "${local.region}",
+                            "awslogs-stream-prefix": "${local.app_name}"
+                        }
+                    },
+                    "healthCheck": {
+                        "command": ["CMD-SHELL", "wget -qO- http://localhost:${local.port}${local.healthcheck_endpoint} >/dev/null 2>&1 || exit 1"],
+                        "interval": 60,
+                        "timeout": 10,
+                        "retries": 3
+                    },
+                    "linuxParameters": {
+                        "initProcessEnabled": true
+                    }
+                }]' \
+                --network-mode awsvpc \
+                --requires-compatibilities FARGATE \
+                --cpu ${local.fargate_cpu} \
+                --memory ${local.fargate_memory} \
+                --runtime-platform "{\"cpuArchitecture\": \"ARM64\", \"operatingSystemFamily\": \"LINUX\"}" > ecs-task-definition.json
+            - REVISION_NUMBER=$(jq -r '.taskDefinition.revision' ecs-task-definition.json)
+        build:
+          commands:
+            - echo "🚀 Starting build phase..."
+            - |
+              if [ "${local.deploy_provider}" = "CodeDeployToECS" ]; then
+                echo "Using CodeDeploy to perform blue/green..."
+
+                # Read ARNs from registration output
+                TASK_DEF_ARN=$(jq -r '.taskDefinition.taskDefinitionArn' ecs-task-definition.json)
+
+                # appspec.json (no heredoc, pure jq)
+                jq -n \
+                  --arg t "$TASK_DEF_ARN" \
+                  --arg n "${local.task_name}" \
+                  --argjson p ${local.port} \
+                  '{version:0.0,
+                    Resources:[
+                      {TargetService:{
+                        Type:"AWS::ECS::Service",
+                        Properties:{
+                          TaskDefinition:$t,
+                          LoadBalancerInfo:{ContainerName:$n, ContainerPort:$p}
+                        }
+                      }}
+                    ]}' > appspec.json
+
+                # create-deployment.final.json using AppSpecContent
+                jq -n \
+                  --arg app "${local.codedeploy_app}" \
+                  --arg dg  "${local.codedeploy_dg}" \
+                  --slurpfile spec appspec.json \
+                  '{applicationName:$app,
+                    deploymentGroupName:$dg,
+                    revision:{
+                      revisionType:"AppSpecContent",
+                      appSpecContent:{content:( $spec[0] | tojson )}
+                    }}' > create-deployment.final.json
+
+                echo "--- appspec.json ---"
+                cat appspec.json
+                echo "--- create-deployment.final.json ---"
+                jq . create-deployment.final.json
+
+                aws deploy create-deployment \
+                  --cli-input-json file://create-deployment.final.json \
+                  > codedeploy-deployment.json
+
+                jq -r '.deploymentId' codedeploy-deployment.json > deployment_id.txt
+                echo "Deployment started: $(cat deployment_id.txt)"
+
+              else
+                echo "Using rolling deploy via ECS UpdateService..."
+                aws ecs update-service \
+                  --cluster ${local.ecs_cluster_name} \
+                  --service ${local.ecs_service_name} \
+                  --force-new-deployment \
+                  --task-definition ${local.task_name}:$REVISION_NUMBER > ecs-service-update.json
+              fi
+        post_build:
+          commands:
+            - echo "🏁 Post-build phase complete! All artifacts are ready and verified."
+            - echo $REVISION_NUMBER > revision_number.txt
+      artifacts:
+        files:
+          - ecs-task-definition.json
+          - ecs-service-update.json
+          - image_tag.txt 
+          - revision_number.txt          
+    EOT
+  }
+
+  tags = {
+    Environment = "${local.environment}"
+  }
+}
