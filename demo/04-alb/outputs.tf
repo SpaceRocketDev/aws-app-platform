@@ -33,7 +33,7 @@ output "alb" {
   value = {
     alb_arn              = module.alb.alb_arn
     alb_arn_suffix       = module.alb.alb_arn_suffix
-    alb_listener_443_arn = module.alb.load_balancer_arn
+    alb_listener_443_arn = module.alb.listener_443_arn
     lb_ssl_policy        = module.alb.ssl_policy
     cert_arn             = module.alb.cert_arn
     alb_sg_id            = module.alb.alb_sg_id
