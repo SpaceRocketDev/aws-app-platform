@@ -23,6 +23,11 @@ output "cert_arn" {
   value       = module.alb.cert_arn
 }
 
+output "alb_sg_id" {
+  description = "Security group id of the ALB"
+  value       = module.alb.alb_sg_id
+}
+
 output "alb" {
   description = "Application Load Balancer outputs"
   value = {
@@ -33,5 +38,3 @@ output "alb" {
     cert_arn             = module.alb.cert_arn
   }
 }
-
-
