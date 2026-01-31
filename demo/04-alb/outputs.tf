@@ -10,7 +10,7 @@ output "alb_arn_suffix" {
 
 output "alb_listener_443_arn" {
   description = "HTTPS (443) listener ARN for the ALB"
-  value       = module.alb.load_balancer_arn
+  value       = module.alb.listener_443_arn
 }
 
 output "lb_ssl_policy" {
