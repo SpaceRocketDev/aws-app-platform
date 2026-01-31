@@ -23,14 +23,15 @@ output "cert_arn" {
   value       = module.alb.cert_arn
 }
 
-# output "alb" {
-#   description = "ALB outputs bundle for downstream layers"
-#   value = {
-#     alb_arn              = module.alb.arn
-#     alb_arn_suffix       = module.alb.alb_arn_suffix
-#     alb_listener_443_arn = module.alb.alb_listener_443_arn
-#     lb_ssl_policy        = module.alb.lb_ssl_policy
-#     cert_arn             = module.acm_certs.cert_arn
-#   }
-# }
+output "alb" {
+  description = "Application Load Balancer outputs"
+  value = {
+    alb_arn              = module.alb.alb_arn
+    alb_arn_suffix       = module.alb.alb_arn_suffix
+    alb_listener_443_arn = module.alb.load_balancer_arn
+    lb_ssl_policy        = module.alb.ssl_policy
+    cert_arn             = module.alb.cert_arn
+  }
+}
+
 
