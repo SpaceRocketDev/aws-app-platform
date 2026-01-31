@@ -18,10 +18,10 @@ output "lb_ssl_policy" {
   value       = module.alb.ssl_policy
 }
 
-# output "cert_arn" {
-#   description = "ACM certificate ARN used by the ALB HTTPS listener"
-#   value       = module.acm_certs.cert_arn
-# }
+output "cert_arn" {
+  description = "ACM certificate ARN used by the ALB HTTPS listener"
+  value       = module.alb.cert_arn
+}
 
 # output "alb" {
 #   description = "ALB outputs bundle for downstream layers"
