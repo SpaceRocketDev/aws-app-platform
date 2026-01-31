@@ -1,0 +1,41 @@
+{
+  "id": null,
+  "uid": "top-lambda-concurrency-24h",
+  "title": "Top Lambda Concurrency - 24h",
+  "timezone": "browser",
+  "schemaVersion": 39,
+  "version": 1,
+  "editable": true,
+  "tags": ["lambda", "prometheus"],
+  "time": { "from": "now-24h", "to": "now" },
+  "refresh": "1m",
+  "panels": [
+    {
+      "id": 1,
+      "type": "barchart",
+      "title": "Top 10 by Max Concurrent Executions (24h)",
+      "description": "Max Concurrent Executions refers to the maximum number of Lambda function instances running at the same time during a specific time window. Max 1000 at a time.",
+      "gridPos": { "h": 12, "w": 24, "x": 0, "y": 0 },
+      "targets": [
+        {
+          "refId": "A",
+          "editorMode": "code",
+          "expr": "topk(10, max by (function_name) (max_over_time(aws_lambda_concurrent_executions_maximum{job=\"cloudwatch_exporter\", exported_job=\"aws_lambda\"}[24h])))",
+          "legendFormat": "{{function_name}}",
+          "range": true
+        }
+      ],
+      "fieldConfig": { "defaults": { "unit": "short" }, "overrides": [] },
+      "options": {
+        "legend": { "displayMode": "table", "placement": "right", "showLegend": true },
+        "orientation": "horizontal",
+        "barWidth": 0.8,
+        "tooltip": { "mode": "single" },
+        "stacking": "none"
+      },
+      "transformations": [
+        { "id": "organize", "options": { "renameByName": { "Value": "max_concurrency" } } }
+      ]
+    }
+  ]
+}

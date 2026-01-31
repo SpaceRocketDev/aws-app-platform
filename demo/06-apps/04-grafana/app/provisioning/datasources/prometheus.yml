@@ -1,0 +1,11 @@
+apiVersion: 1
+datasources:
+  - name: Prometheus
+    type: prometheus
+    access: proxy
+    url: https://prom.obs.hardlineapp.com
+    isDefault: true
+    jsonData:
+      httpMethod: POST
+    # secureJsonData:
+    #   tlsSkipVerify: true   # only if your cert is not trusted

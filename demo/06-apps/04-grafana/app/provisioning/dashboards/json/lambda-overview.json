@@ -1,0 +1,58 @@
+{
+  "id": null,
+  "uid": "lambda-overview-3h",
+  "title": "Lambda Overview (3h)",
+  "timezone": "browser",
+  "schemaVersion": 39,
+  "version": 1,
+  "editable": true,
+  "tags": ["lambda", "prometheus", "overview"],
+  "time": { "from": "now-3h", "to": "now" },
+  "refresh": "1m",
+  "panels": [
+    {
+      "id": 1,
+      "type": "timeseries",
+      "title": "Invocations: Sum",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 0 },
+      "targets": [
+        { "refId": "A", "editorMode": "code", "expr": "sum by (function_name) (aws_lambda_invocations_sum)", "legendFormat": "{{function_name}}", "range": true }
+      ],
+      "fieldConfig": { "defaults": { "unit": "short" }, "overrides": [] },
+      "options": { "legend": { "showLegend": true, "displayMode": "list", "placement": "right" } }
+    },
+    {
+      "id": 2,
+      "type": "timeseries",
+      "title": "Duration: Average (ms)",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 0 },
+      "targets": [
+        { "refId": "A", "editorMode": "code", "expr": "avg by (function_name) (aws_lambda_duration_average)", "legendFormat": "{{function_name}}", "range": true }
+      ],
+      "fieldConfig": { "defaults": { "unit": "ms" }, "overrides": [] },
+      "options": { "legend": { "showLegend": true, "displayMode": "list", "placement": "right" } }
+    },
+    {
+      "id": 3,
+      "type": "timeseries",
+      "title": "Errors: Sum",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 8 },
+      "targets": [
+        { "refId": "A", "editorMode": "code", "expr": "sum by (function_name) (aws_lambda_errors_sum)", "legendFormat": "{{function_name}}", "range": true }
+      ],
+      "fieldConfig": { "defaults": { "unit": "short" }, "overrides": [] },
+      "options": { "legend": { "showLegend": true, "displayMode": "list", "placement": "right" } }
+    },
+    {
+      "id": 4,
+      "type": "timeseries",
+      "title": "Throttles: Sum",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 8 },
+      "targets": [
+        { "refId": "A", "editorMode": "code", "expr": "sum by (function_name) (aws_lambda_throttles_sum)", "legendFormat": "{{function_name}}", "range": true }
+      ],
+      "fieldConfig": { "defaults": { "unit": "short" }, "overrides": [] },
+      "options": { "legend": { "showLegend": true, "displayMode": "list", "placement": "right" } }
+    }
+  ]
+}

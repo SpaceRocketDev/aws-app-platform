@@ -1,0 +1,12 @@
+apiVersion: 1
+datasources:
+  - name: aurora-postgres
+    type: postgres
+    access: proxy
+    url: ${GF_DS_AURORA_HOST}:${GF_DS_AURORA_PORT}
+    user: ${GF_DS_AURORA_USER}
+    jsonData:
+      database: ${GF_DS_AURORA_DB}
+      sslmode: require
+    secureJsonData:
+      password: $GF_DS_AURORA_PASSWORD
