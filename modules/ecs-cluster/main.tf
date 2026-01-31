@@ -39,23 +39,22 @@ resource "aws_iam_role_policy_attachment" "ecs_execution_attachment" {
 }
 
 
-# (Optionally) attach a policy for reading parameters from SSM under the
-# execution role, if you prefer that design
 resource "aws_iam_policy" "ssm_params_policy" {
-  name   = "${var.ecs_cluster_config.env}-${var.ecs_cluster_config.project}-ssm-params-policy"
+  name = "${var.ecs_cluster_config.env}-${var.ecs_cluster_config.project}-ssm-params-policy"
+
   policy = jsonencode({
-    Version = "2012-10-17",
-    Statement = [
-      {
-        Effect = "Allow",
-        Action = ["ssm:GetParameters"],
-        Resource = [
-          for prefix in var.ecs_cluster_config.ssm_secret_path_prefixes : "${prefix}/*"
-        ]
-      }
-    ]
+    Version = "2012-10-17"
+    Statement = [{
+      Effect  = "Allow"
+      Action  = ["ssm:GetParameters"]
+      Resource = [
+        for prefix in var.ecs_cluster_config.ssm_secret_path_prefixes :
+        "arn:aws:ssm:${var.ecs_cluster_config.aws_region}:${var.ecs_cluster_config.account_id}:parameter${prefix}/*"
+      ]
+    }]
   })
 }
+
 
 resource "aws_iam_role_policy_attachment" "ssm_params_policy_attachment" {
   role       = aws_iam_role.ecs_execution_role.name
@@ -66,21 +65,16 @@ resource "aws_iam_policy" "ecs_execution_ssm_access" {
   name = "${var.ecs_cluster_config.env}-${var.ecs_cluster_config.project}-ecs-execution-ssm"
 
   policy = jsonencode({
-    Version = "2012-10-17",
-    Statement = [
-      {
-        Sid    = "AllowSSMReadForECSExecution",
-        Effect = "Allow",
-        Action = [
-          "ssm:GetParameters",
-          "ssm:GetParameter",
-          "ssm:GetParametersByPath"
-        ],
-        Resource = [
-          for prefix in var.ecs_cluster_config.ssm_secret_path_prefixes : "${prefix}/*"
-        ]
-      }
-    ]
+    Version = "2012-10-17"
+    Statement = [{
+      Sid     = "AllowSSMReadForECSExecution"
+      Effect  = "Allow"
+      Action  = ["ssm:GetParameters", "ssm:GetParameter", "ssm:GetParametersByPath"]
+      Resource = [
+        for prefix in var.ecs_cluster_config.ssm_secret_path_prefixes :
+        "arn:aws:ssm:${var.ecs_cluster_config.aws_region}:${var.ecs_cluster_config.account_id}:parameter${prefix}/*"
+      ]
+    }]
   })
 }
 
