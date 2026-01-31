@@ -1,4 +1,4 @@
-output "ecs_cluster_outputs" {
+output "ecs_cluster" {
   description = "All ecs_cluster primitives as a single object"
   value = {
     ecs_execution_role_arn = module.ecs_cluster.ecs_execution_role_arn
