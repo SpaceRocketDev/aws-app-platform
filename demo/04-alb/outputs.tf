@@ -36,5 +36,6 @@ output "alb" {
     alb_listener_443_arn = module.alb.load_balancer_arn
     lb_ssl_policy        = module.alb.ssl_policy
     cert_arn             = module.alb.cert_arn
+    alb_sg_id            = module.alb.alb_sg_id
   }
 }
