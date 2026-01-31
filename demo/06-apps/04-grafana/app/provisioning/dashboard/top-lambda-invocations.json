@@ -1,0 +1,63 @@
+{
+  "id": null,
+  "uid": "top-lambda-24h",
+  "title": "Top Lambda Invocations - 24h",
+  "timezone": "browser",
+  "schemaVersion": 39,
+  "version": 1,
+  "editable": true,
+  "tags": ["lambda", "prometheus"],
+  "time": {
+    "from": "now-24h",
+    "to": "now"
+  },
+  "refresh": "1m",
+  "templating": {
+    "list": []
+  },
+  "panels": [
+    {
+      "id": 1,
+      "type": "barchart",
+      "title": "Top 10 by Invocations (24h)",
+      "gridPos": { "h": 12, "w": 24, "x": 0, "y": 0 },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "right",
+          "showLegend": true
+        },
+        "orientation": "horizontal",
+        "barWidth": 0.8,
+        "xTickLabelRotation": 0,
+        "tooltip": { "mode": "single" },
+        "stacking": "none"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "editorMode": "code",
+          "exemplar": false,
+          "expr": "topk(10,\n  sum by (function_name) (\n    sum_over_time(aws_lambda_invocations_sum[24h])\n  )\n)",
+          "legendFormat": "{{function_name}}",
+          "range": true,
+          "instant": false
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "custom": {
+            "drawStyle": "bars",
+            "lineWidth": 0,
+            "fillOpacity": 80
+          }
+        },
+        "overrides": []
+      },
+      "transformations": [
+        { "id": "organize", "options": { "renameByName": { "Value": "invocations" } } }
+      ]
+    }
+  ]
+}
