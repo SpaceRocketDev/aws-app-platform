@@ -13,8 +13,8 @@ curl -s http://localhost:9091/metrics | head
 
 ```bash
 export AWS_REGION=us-east-1
-export AWS_ACCOUNT_ID=078618946307
-export ECR_REPO=space-rocket/prod/hello-world
+export AWS_ACCOUNT_ID=123456789012
+export ECR_REPO=space-rocket/dev/app1
 export IMAGE_TAG=latest
 export ECR_URI="${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${ECR_REPO}:${IMAGE_TAG}"
 ```
