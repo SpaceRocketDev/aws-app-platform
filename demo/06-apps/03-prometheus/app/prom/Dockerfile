@@ -1,7 +1,7 @@
 # syntax=docker/dockerfile:1
-ARG PROMETHEUS_VERSION=v2.54.1
+ARG PROMETHEUS_VERSION=v3.5.1
 # TODO MAKE VAR
-FROM 123456789012.dkr.ecr.us-east-1.amazonaws.com/prometheus:${PROMETHEUS_VERSION}
+FROM prom/prometheus:${PROMETHEUS_VERSION}
 
 USER root
 RUN mkdir -p /etc/prometheus /etc/prometheus/rules /prometheus \
