@@ -3,7 +3,7 @@ datasources:
   - name: Prometheus
     type: prometheus
     access: proxy
-    url: https://prom.obs.hardlineapp.com
+    url: https://prom.demo.spacerocket.dev
     isDefault: true
     jsonData:
       httpMethod: POST
