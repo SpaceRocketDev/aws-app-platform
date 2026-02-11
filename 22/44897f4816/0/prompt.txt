@@ -1,0 +1,56 @@
+> Build me a production-ready Elixir/Phoenix Incident Response Platform with real-time LiveView dashboard. Here are the requirements:
+>
+> **Core Features:**
+> - Log incidents with title, description, reporter, affected service, and severity
+> - Auto-classify severity (P1–P4) based on keywords and affected service criticality
+> - Track incident lifecycle: opened → acknowledged → investigating → mitigated → resolved
+> - Calculate MTTR (Mean Time To Resolution) per service and overall
+> - Post incident notifications to Slack via webhook
+> - Incident timeline/activity log (status changes, comments, assignments)
+> - **Real-time LiveView dashboard** — incidents stream in live, status changes update instantly, MTTR gauges refresh automatically
+>
+> **Routes/Endpoints (6–8):**
+> 1. `POST /api/incidents` — create a new incident (JSON API)
+> 2. `GET /api/incidents` — list incidents with filters (status, severity, service, date range)
+> 3. `GET /api/incidents/:id` — get incident detail with full timeline
+> 4. `PATCH /api/incidents/:id` — update status, assign, add comment
+> 5. `GET /api/metrics/mttr` — MTTR stats by service and severity
+> 6. `POST /api/incidents/:id/notify` — trigger Slack notification
+> 7. `GET /api/health` — health check endpoint
+>
+> **LiveView Pages:**
+> - `/dashboard` — real-time incident board with live status updates, severity breakdown, active incident count, and MTTR gauges
+> - `/incidents/:id` — live incident detail with streaming timeline (new comments, status changes appear instantly via PubSub)
+> - `/incidents/new` — incident creation form with live severity preview based on keyword detection
+>
+> **Tech Stack:**
+> - Elixir 1.17+ / Phoenix 1.7+ with Phoenix LiveView
+> - PostgreSQL with Ecto + migrations
+> - Phoenix PubSub for real-time broadcasts
+> - Phoenix Token auth for API endpoints
+> - Tailwind CSS (Phoenix default) for dashboard styling
+> - Docker + docker-compose for local dev (app + postgres)
+> - ExUnit tests
+>
+> **Project Structure:**
+> Standard Phoenix project layout:
+> ```
+> lib/
+>   incident_commander/        # domain/context layer
+>     incidents.ex              # incidents context
+>     incidents/incident.ex     # Ecto schema
+>     incidents/timeline.ex     # timeline entries schema
+>     services.ex               # services context
+>     metrics.ex                # MTTR calculations
+>     notifications/slack.ex    # Slack webhook client
+>   incident_commander_web/    # web layer
+>     live/
+>       dashboard_live.ex       # real-time dashboard
+>       incident_live/
+>         show.ex               # live incident detail
+>         form.ex               # incident creation
+>     controllers/
+>       incident_controller.ex  # JSON API
+>       health_controller.ex
+>     router.ex
+> ```
