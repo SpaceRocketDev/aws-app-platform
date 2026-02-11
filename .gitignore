@@ -1,0 +1,70 @@
+# Terraform
+*.tfstate
+*.tfstate.*
+crash.log
+crash.*.log
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+.terraform/
+.terraform.lock.hcl
+**/backend.hcl
+**/backend_*.hcl
+
+
+
+# Sensitive files
+*.pem
+*.key
+*.crt
+*.tfvars
+*.tfvars.json
+*.auto.tfvars
+*.auto.tfvars.json
+
+# Local execution and plan files
+terraform.tfplan
+terraform.tfplan.*
+plan.out
+
+# Logs and debug
+*.log
+*.bak
+
+# Context and helper files (exclude from any dir)
+**/ctx.md
+**/ctx.json
+**/ctx.jsonc
+**/issue.md
+**/issue.sh
+
+# macOS junk
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon?
+._*
+.Spotlight-V100
+.Trashes
+
+# IDE/editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*.swn
+*.sublime-workspace
+*.sublime-project
+*.iml
+
+# Node / build cache (if any)
+node_modules/
+dist/
+build/
+.cache/
+coverage/
+
+*.SECRET.*
+
+app1
