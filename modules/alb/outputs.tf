@@ -57,3 +57,8 @@ output "listener_443_arn" {
   value       = aws_lb_listener.default_app_443.arn
 }
 
+output "waf_web_acl_arn" {
+  description = "ARN of the WAF Web ACL protecting the ALB."
+  value       = var.alb_config.enable_waf ? aws_wafv2_web_acl.this[0].arn : null
+}
+

@@ -34,6 +34,7 @@ variable "alb_config" {
     nat_gateway_eips               = optional(list(string), []) 
     logs_kms_key_arn               = optional(string, null)
     enable_deletion_protection     = optional(bool, true)
+    enable_waf                     = optional(bool, true)
 
     natgw_count = string # "none" | "one" | "all"
     public_ips          = map(string)
@@ -75,6 +76,7 @@ variable "alb_config" {
     nat_gateway_eips                 = []
     logs_kms_key_arn                 = null
     enable_deletion_protection       = true
+    enable_waf                       = true
 
     natgw_count = "none" # "none" | "one" | "all"
     public_ips          = { "0.0.0.0/0" = "Open" }
