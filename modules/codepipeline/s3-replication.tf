@@ -51,7 +51,7 @@ resource "aws_s3_bucket_versioning" "codepipeline_bucket_replica" {
 ############################################
 resource "aws_s3_bucket" "codepipeline_access_logs_replica" {
   provider = aws.replica
-  bucket   = "${local.task_name}-codepipeline-access-replica"
+  bucket   = "${local.task_name}-cp-access-replica"
   tags     = local.common_tags
 }
 
@@ -118,7 +118,7 @@ resource "aws_s3_bucket_policy" "codepipeline_access_logs_replica" {
 ############################################
 resource "aws_s3_bucket" "codepipeline_access_logs_replica_dst" {
   provider = aws.replica
-  bucket   = "${local.task_name}-codepipeline-access-replica-dst"
+  bucket   = "${local.task_name}-cp-access-replica-dst"
   tags     = local.common_tags
 }
 
@@ -213,7 +213,7 @@ resource "aws_s3_bucket_logging" "codepipeline_access_logs_replica" {
 # Primary target for dst replication
 ############################################
 resource "aws_s3_bucket" "codepipeline_access_logs_replica_dst_primary" {
-  bucket = "${local.task_name}-codepipeline-access-replica-dst-pri"
+  bucket = "${local.task_name}-cp-access-replica-dst-pri"
   tags   = local.common_tags
 }
 

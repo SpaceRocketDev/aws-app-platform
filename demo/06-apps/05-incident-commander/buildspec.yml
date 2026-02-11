@@ -1,0 +1,39 @@
+version: 0.2
+
+env:
+  shell: bash
+  variables:
+    AWS_REGION: us-east-1
+    ECR_REPO: space-rocket/prod/incident-responder
+    IMAGE_TAG: latest
+
+phases:
+  pre_build:
+    commands:
+      - echo "Logging in to ECR..."
+      - ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
+      - ECR_URI="${ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${ECR_REPO}"
+      - aws ecr get-login-password --region "$AWS_REGION" | docker login --username AWS --password-stdin "${ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com"
+      - echo "Ensuring buildx..."
+      - docker buildx create --use >/dev/null 2>&1 || true
+      - GIT_SHA=${CODEBUILD_RESOLVED_SOURCE_VERSION:0:7}
+      - IMAGE_FULL_TAG="${ECR_URI}:${GIT_SHA}"
+  build:
+    commands:
+      - echo "Building image ${IMAGE_FULL_TAG}..."
+      - docker buildx build --platform linux/arm64 -t "${IMAGE_FULL_TAG}" -f app/Dockerfile app
+      - echo "Pushing ${IMAGE_FULL_TAG}..."
+      - docker push "${IMAGE_FULL_TAG}"
+  post_build:
+    commands:
+      - echo "Rendering taskdef.json and appspec.yaml for CodeDeploy..."
+      - mkdir -p artifact
+      - cp cicd/appspec.yaml artifact/appspec.yaml
+      - cat cicd/taskdef-template.json \
+          | jq --arg IMG "${IMAGE_FULL_TAG}" '.[] as $c | .[].image? |= $IMG | .'
+          > artifact/taskdef.json
+artifacts:
+  files:
+    - artifact/appspec.yaml
+    - artifact/taskdef.json
+  discard-paths: yes
