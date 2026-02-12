@@ -41,5 +41,7 @@ module "alb" {
       if !can(regex("/", ip))
     }
     public_ips_v6 = {}
+
+    enable_waf = var.enable_waf
   }
 }

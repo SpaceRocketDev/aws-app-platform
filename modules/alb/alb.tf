@@ -1,4 +1,5 @@
 resource "aws_lb" "this" {
+  #checkov:skip=CKV2_AWS_76:AWSManagedRulesKnownBadInputsRuleSet is configured in waf.tf; Checkov graph cannot trace count-indexed associations
   name               = var.alb_config.name_prefix
   internal           = false
   load_balancer_type = "application"

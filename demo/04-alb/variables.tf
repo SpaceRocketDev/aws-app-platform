@@ -58,3 +58,9 @@ variable "base_domain" {
   description = "Base DNS domain hosted in Route53. Used to generate per-app FQDNs (for example, app.base_domain and base_domain) and create ALB alias records."
   default     = "example.com"
 }
+
+variable "enable_waf" {
+  type        = bool
+  description = "Attach a WAF v2 Web ACL to the ALB."
+  default     = true
+}
